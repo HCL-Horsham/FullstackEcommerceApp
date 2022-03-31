@@ -22,11 +22,18 @@ jobs:
         distribution: 'microsoft'
         cache: maven
         
+    - name: Cache Maven packages
+      uses: actions/cache@v2.1.4
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+      
     - name: Build with Maven
       run: mvn -B package --file pom.xml
       
-    - name: Build artifacts
-      run: make build-windows
+#     - name: Build artifacts
+#       run: make build-windows
       
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
