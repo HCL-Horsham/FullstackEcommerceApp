@@ -29,7 +29,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: java-app
-        path: .
+        path: '${{ github.workspace }}/target/*.war'
         
 #   deploy-staging:
 #     if: github.event_name == 'pull_request' && github.event.action != 'closed'
@@ -58,22 +58,20 @@ jobs:
     runs-on: windows-latest
     needs: build
     environment:
-      name: 'production'
-      url: $${ steps.deploy-to-webapp.outputs.webapp-url }}
-      
-    steps:
-    - name: Download artifact from build job
-      uses: actions/download-artifact@v2
-      with:
-        name: java-app
-        
-    - name: 'Deploy to Azure Web App'
-      id: deploy-to-webapp
-      uses: azure/webapps-deploy@vs
-      with:
-        app-name: 'horshambags-backend'
-        slow-name: 'Production'
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A0489B3EDB32419B90B8F96627874688 }}
-  
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-  
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: java-app
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'horshambags-backend'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A0489B3EDB32419B90B8F96627874688 }}
+          package: '*.war'
