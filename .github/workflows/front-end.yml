@@ -20,4 +20,6 @@ jobs:
       with:
         node-version: '16'
     - run: npm install
+      working-directory: FullstackEcommerceApp/frontend-angular/final-angular-ecommerce/
+      
     - run: npm test
